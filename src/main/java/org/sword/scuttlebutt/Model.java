@@ -1,5 +1,6 @@
 package org.sword.scuttlebutt;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -10,9 +11,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2019-11-10
  * @since 1.0.0
  */
+@Getter
 @Slf4j
 public class Model<T> extends Scuttlebutt<T> {
+
     private Map<String, Update<T>> store = new ConcurrentHashMap<>();
+
+    public Model(String id){
+        super(id);
+    }
 
     @Override
     public Update<T>[] history(Map<String, Long> peerSource) {
@@ -33,17 +40,23 @@ public class Model<T> extends Scuttlebutt<T> {
             return;
         }
         store.putIfAbsent(key, update);
+
     }
 
     @Override
     public void localUpdate(Update update) {
-        source.putIfAbsent(sourceId, update.getTimestamp());
+        if (source.computeIfAbsent(update.getSourceId(), s -> 0L)>update.getTimestamp()){
+            return;
+        }
+        source.put(sourceId, update.getTimestamp());
         applyUpdates(update);
+        emitListeners("update",update);
+
     }
 
 
     public void set(String key, T value) {
-        localUpdate(new Update<>(sourceId, System.currentTimeMillis(), new BizData<>(key, value)));
+        localUpdate(new Update<>(sourceId, System.currentTimeMillis(), new BizData<>(key, value),sourceId));
     }
 
     public T get(String key) {

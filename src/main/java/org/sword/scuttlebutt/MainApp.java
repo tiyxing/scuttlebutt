@@ -1,15 +1,33 @@
 package org.sword.scuttlebutt;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * A Camel Application
  */
+@Slf4j
 public class MainApp {
 
     /**
      * A main() so we can easily run these routing rules in our IDE
      */
     public static void main(String... args) throws Exception {
-        System.out.println("helloworld");
+        Model a=new Model("A-model");
+        Model b=new Model("B-model");
+
+        a.set("key1","test1");
+        b.set("key2","test2");
+
+        Duplex  ad= a.creatStream();
+        Duplex bd = b.creatStream();
+
+        ad.pullSource(bd::source);
+        bd.pullSource(ad::source);
+
+
+        log.info("model a:{}",a.getStore().toString());
+        log.info("model b:{}",b.getStore().toString());
+
     }
 
 }

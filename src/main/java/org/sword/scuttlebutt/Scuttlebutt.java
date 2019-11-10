@@ -8,9 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2019-11-10
  * @since 1.0.0
  */
-public abstract class Scuttlebutt<T> {
+public abstract class Scuttlebutt<T>  extends EventEmitter{
 
     protected String sourceId;
+
+    public Scuttlebutt(String id){
+        this.sourceId=id;
+    }
 
     protected Map<String,Long> source=new ConcurrentHashMap<>();
 
@@ -20,9 +24,10 @@ public abstract class Scuttlebutt<T> {
 
     public abstract void localUpdate(Update<T> update);
 
-    private Duplex creatStream(){
+    public Duplex creatStream(){
         return  new Duplex(this);
     }
+
 
 
 
