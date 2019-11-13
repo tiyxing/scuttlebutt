@@ -21,8 +21,11 @@ public class MainApp {
         Duplex  ad= a.creatStream();
         Duplex bd = b.creatStream();
 
+        a.set("key3","test3");
         ad.pullSource(bd::source);
         bd.pullSource(ad::source);
+
+        a.set("k4","test4");
 
 
         log.info("model a:{}",a.getStore().toString());

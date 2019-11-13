@@ -114,7 +114,8 @@ public class Duplex {
             if (peerId.equals(update.getFrom())){
                 return update;
             }
-            if (peerClock.get(update.getSourceId())>update.getTimestamp()){
+            //支持双向通信
+            if (peerClock.get(peerId)>update.getTimestamp()){
                 return update;
             }
             update.setFrom(sb.sourceId);
